@@ -1,33 +1,33 @@
 import express from 'express'
-import expenseCtrl from '../controllers/expense.controller'
-import authCtrl from '../controllers/auth.controller'
+import expenseControl from '../controllers/expense.controller'
+import authControl from '../controllers/auth.controller'
 
 const router = express.Router()
 
 router.route('/api/expenses/current/preview')
-  .get(authCtrl.requireSignin, expenseCtrl.currentMonthPreview)
+  .get(authControl.requireSignin, expenseControl.currentMonthPreview)
 
 router.route('/api/expenses/by/category')
-  .get(authCtrl.requireSignin, expenseCtrl.expenseByCategory)
+  .get(authControl.requireSignin, expenseControl.expenseByCategory)
 
 router.route('/api/expenses/plot')
-  .get(authCtrl.requireSignin, expenseCtrl.plotExpenses)
+  .get(authControl.requireSignin, expenseControl.plotExpenses)
 
 router.route('/api/expenses/category/averages')
-  .get(authCtrl.requireSignin, expenseCtrl.averageCategories)
+  .get(authControl.requireSignin, expenseControl.averageCategories)
 
 router.route('/api/expenses/yearly')
-  .get(authCtrl.requireSignin, expenseCtrl.yearlyExpenses)
+  .get(authControl.requireSignin, expenseControl.yearlyExpenses)
 
 router.route('/api/expenses')
-  .post(authCtrl.requireSignin, expenseCtrl.create)
-  .get(authCtrl.requireSignin, expenseCtrl.listByUser)
+  .post(authControl.requireSignin, expenseControl.create)
+  .get(authControl.requireSignin, expenseControl.listByUser)
 
 router.route('/api/expenses/:expenseId')
-  // .get(authCtrl.requireSignin, expenseCtrl.read)
-  .put(authCtrl.requireSignin, expenseCtrl.hasAuthorization, expenseCtrl.update)
-  .delete(authCtrl.requireSignin, expenseCtrl.hasAuthorization, expenseCtrl.remove)
+  // .get(authControl.requireSignin, expenseControl.read)
+  .put(authControl.requireSignin, expenseControl.hasAuthorization, expenseControl.update)
+  .delete(authControl.requireSignin, expenseControl.hasAuthorization, expenseControl.remove)
 
-router.param('expenseId', expenseCtrl.expenseByID)
+router.param('expenseId', expenseControl.expenseByID)
 
 export default router

@@ -119,7 +119,7 @@ export default function Expenses() {
     }
     const handleDateChange = index => date => {
         const updatedExpenses = [...expenses]
-        updatedExpenses[index].incurred_on = date
+        updatedExpenses[index].transaction_date = date
         setExpenses(updatedExpenses)
       }
     const clickUpdate = (index) => {
@@ -183,7 +183,7 @@ export default function Expenses() {
                 <Typography>
                     {expense.category}
                 </Typography>
-                <Typography className={classes.date}>{new Date(expense.incurred_on).toLocaleDateString()}</Typography>  
+                <Typography className={classes.date}>{new Date(expense.transaction_date).toLocaleDateString()}</Typography>  
             </div>
             <div>
                 <Typography className={classes.heading}>{expense.title}</Typography>
@@ -204,7 +204,7 @@ export default function Expenses() {
                     label="Incurred on"
                     className={classes.textField}
                     views={["year", "month", "date"]}
-                    value={expense.incurred_on}
+                    value={expense.transaction_date}
                     onChange={handleDateChange(index)}
                     showTodayButton
                 />

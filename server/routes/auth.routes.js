@@ -1,11 +1,11 @@
 import express from 'express'
-import authCtrl from '../controllers/auth.controller'
+import authControl from '../controllers/auth.controller'
 
 const router = express.Router()
 
 router.route('/auth/signin')
-  .post(authCtrl.signin)
+  .post(authControl.signin)
 router.route('/auth/signout')
-  .get(authCtrl.signout)
+  .get(authControl.signout)
 
 export default router

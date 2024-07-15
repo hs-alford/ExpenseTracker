@@ -42,7 +42,7 @@ const listByUser = async (req, res) => {
   let firstDay = req.query.firstDay
   let lastDay = req.query.lastDay
   try {
-    let expenses = await Expense.find({'$and':[{'incurred_on':{'$gte': firstDay, '$lte':lastDay}}, {'recorded_by': req.auth._id}]}).sort('incurred_on').populate('recorded_by', '_id name')
+    let expenses = await Expense.find({'$and':[{'transaction_date':{'$gte': firstDay, '$lte':lastDay}}, {'recorded_by': req.auth._id}]}).sort('transaction_date').populate('recorded_by', '_id name')
     res.json(expenses)
   } catch (err){
     console.log(err)
@@ -72,15 +72,15 @@ const currentMonthPreview = async (req, res) => {
     let currentPreview = await Expense.aggregate([
       {
           $facet: { month: [
-                              { $match : { incurred_on : { $gte : firstDay, $lt: lastDay }, recorded_by: mongoose.Types.ObjectId(req.auth._id)}},
+                              { $match : { transaction_date : { $gte : firstDay, $lt: lastDay }, recorded_by: mongoose.Types.ObjectId(req.auth._id)}},
                               { $group : { _id : "currentMonth" , totalSpent:  {$sum: "$amount"} } },
                             ],
                     today: [
-                      { $match : { incurred_on : { $gte : today, $lt: tomorrow }, recorded_by: mongoose.Types.ObjectId(req.auth._id) }},
+                      { $match : { transaction_date : { $gte : today, $lt: tomorrow }, recorded_by: mongoose.Types.ObjectId(req.auth._id) }},
                       { $group : { _id : "today" , totalSpent:  {$sum: "$amount"} } },
                     ],
                     yesterday: [
-                      { $match : { incurred_on : { $gte : yesterday, $lt: today }, recorded_by: mongoose.Types.ObjectId(req.auth._id) }},
+                      { $match : { transaction_date : { $gte : yesterday, $lt: today }, recorded_by: mongoose.Types.ObjectId(req.auth._id) }},
                       { $group : { _id : "yesterday" , totalSpent:  {$sum: "$amount"} } },
                     ]
                   }
@@ -107,7 +107,7 @@ const expenseByCategory = async (req, res) => {
         $facet: {
             average: [
               { $match : { recorded_by: mongoose.Types.ObjectId(req.auth._id) }},
-              { $group : { _id : {category: "$category", month: {$month: "$incurred_on"}}, totalSpent:  {$sum: "$amount"} } },
+              { $group : { _id : {category: "$category", month: {$month: "$transaction_date"}}, totalSpent:  {$sum: "$amount"} } },
               { $group: { _id: "$_id.category", avgSpent: { $avg: "$totalSpent"}}},
               {
                   $project: {
@@ -116,7 +116,7 @@ const expenseByCategory = async (req, res) => {
               }
             ],
             total: [
-              { $match : { incurred_on : { $gte : firstDay, $lte: lastDay }, recorded_by: mongoose.Types.ObjectId(req.auth._id) }},
+              { $match : { transaction_date : { $gte : firstDay, $lte: lastDay }, recorded_by: mongoose.Types.ObjectId(req.auth._id) }},
               { $group : { _id : "$category", totalSpent:  {$sum: "$amount"} } },
               {
                 $project: {
@@ -151,7 +151,7 @@ const averageCategories = async (req, res) => {
 
   try {
     let categoryMonthlyAvg = await Expense.aggregate([
-      { $match : { incurred_on : { $gte : firstDay, $lte: lastDay }, recorded_by: mongoose.Types.ObjectId(req.auth._id)}},
+      { $match : { transaction_date : { $gte : firstDay, $lte: lastDay }, recorded_by: mongoose.Types.ObjectId(req.auth._id)}},
       { $group : { _id : {category: "$category"}, totalSpent:  {$sum: "$amount"} } },
       { $group: { _id: "$_id.category", avgSpent: { $avg: "$totalSpent"}}},
       { $project: {x: '$_id', y: '$avgSpent'}}
@@ -172,8 +172,8 @@ const yearlyExpenses = async (req, res) => {
   const lastDay = new Date(y, 12, 0)
   try {
     let totalMonthly = await Expense.aggregate(  [
-      { $match: { incurred_on: { $gte : firstDay, $lt: lastDay }, recorded_by: mongoose.Types.ObjectId(req.auth._id) }},
-      { $group: { _id: {$month: "$incurred_on"}, totalSpent:  {$sum: "$amount"} } },
+      { $match: { transaction_date: { $gte : firstDay, $lt: lastDay }, recorded_by: mongoose.Types.ObjectId(req.auth._id) }},
+      { $group: { _id: {$month: "$transaction_date"}, totalSpent:  {$sum: "$amount"} } },
       { $project: {x: '$_id', y: '$totalSpent'}}
     ]).exec()
     res.json({monthTot:totalMonthly})
@@ -193,8 +193,8 @@ const plotExpenses = async (req, res) => {
 
   try {
     let totalMonthly = await Expense.aggregate(  [
-      { $match: { incurred_on: { $gte : firstDay, $lt: lastDay }, recorded_by: mongoose.Types.ObjectId(req.auth._id) }},
-      { $project: {x: {$dayOfMonth: '$incurred_on'}, y: '$amount'}}
+      { $match: { transaction_date: { $gte : firstDay, $lt: lastDay }, recorded_by: mongoose.Types.ObjectId(req.auth._id) }},
+      { $project: {x: {$dayOfMonth: '$transaction_date'}, y: '$amount'}}
     ]).exec()
     res.json(totalMonthly)
   } catch (err){
@@ -209,7 +209,7 @@ const plotExpenses = async (req, res) => {
     try {
       let expense = req.expense
       expense = extend(expense, req.body)
-      expense.updated = Date.now()
+      expense.date_updated = Date.now()
       await expense.save()
       res.json(expense)
     } catch (err) {

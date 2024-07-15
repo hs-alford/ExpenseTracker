@@ -15,7 +15,7 @@ const ExpenseSchema = new mongoose.Schema({
       min: 0,
       required: 'Amount is required'
   },
-  incurred_on: {
+  transaction_date: {
     type: Date,
     default: Date.now
   },
@@ -23,8 +23,8 @@ const ExpenseSchema = new mongoose.Schema({
     type: String,
     trim: true
   },
-  updated: Date,
-  created: {
+  date_updated: Date,
+  date_created: {
     type: Date,
     default: Date.now
   },

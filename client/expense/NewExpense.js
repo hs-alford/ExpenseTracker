@@ -53,7 +53,7 @@ export default function NewExpense() {
       title: '',
       category: '',
       amount: '',
-      incurred_on: new Date(),
+      transaction_date: new Date(),
       notes: '',
       error: ''
   })
@@ -63,7 +63,7 @@ export default function NewExpense() {
     setValues({...values, [name]: event.target.value })
   }
   const handleDateChange = date => {
-    setValues({...values, incurred_on: date })
+    setValues({...values, transaction_date: date })
   }
 
   const clickSubmit = () => {
@@ -71,7 +71,7 @@ export default function NewExpense() {
         title: values.title || undefined,
         category: values.category || undefined,
         amount: values.amount || undefined,
-        incurred_on: values.incurred_on || undefined,
+        transaction_date: values.transaction_date || undefined,
         notes: values.notes || undefined 
     }
     create({
@@ -105,7 +105,7 @@ export default function NewExpense() {
                     label="Incurred on"
                     className={classes.textField}
                     views={["year", "month", "date"]}
-                    value={values.incurred_on}
+                    value={values.transaction_date}
                     onChange={handleDateChange}
                     showTodayButton
                 />

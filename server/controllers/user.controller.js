@@ -43,7 +43,7 @@ const read = (req, res) => {
 
 const list = async (req, res) => {
   try {
-    let users = await User.find().select('name email updated created')
+    let users = await User.find().select('name email date_updated created')
     res.json(users)
   } catch (err) {
     return res.status(400).json({
@@ -56,7 +56,7 @@ const update = async (req, res) => {
   try {
     let user = req.profile
     user = extend(user, req.body)
-    user.updated = Date.now()
+    user.date_updated = Date.now()
     await user.save()
     user.hashed_password = undefined
     user.salt = undefined
